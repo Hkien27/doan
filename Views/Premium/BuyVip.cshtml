@@ -1,0 +1,38 @@
+@model IEnumerable<SecondHandSharing.Models.ServicePackage>
+@{
+    ViewData["Title"] = "Mua gói VIP";
+}
+
+<div class="container my-4">
+    <h2>⭐ Mua gói VIP</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row">
+        @foreach (var p in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-warning text-dark fw-bold">@p.Name</div>
+                    <div class="card-body">
+                        <p>Giá: <strong>@p.Price.ToString("N0") đ</strong></p>
+                        <p>Thời hạn: <strong>@p.DurationDays ngày</strong></p>
+                        <p class="text-muted">@p.Description</p>
+
+                        <form asp-action="BuyVip" method="post">
+                            <input type="hidden" name="packageId" value="@p.PackageId" />
+                            <button class="btn btn-warning w-100 fw-bold">Thanh toán bằng ví</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

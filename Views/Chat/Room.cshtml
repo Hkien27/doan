@@ -1,0 +1,342 @@
+@model SecondHandSharing.Models.Conversation
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Chat";
+    var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    var partner = Model.User1Id == currentUserId ? Model.User2 : Model.User1;
+}
+
+<style>
+    /* Custom styling cho chat room đẹp hơn */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+    }
+
+    .chat-header {
+        background: linear-gradient(90deg, #ffcc00, #ffd633);
+        padding: 16px 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-bottom: none;
+    }
+
+    .chat-header h3 {
+        margin: 0;
+        color: #222;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .partner-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #ffcc00;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
+    }
+
+    .message {
+        display: flex;
+        gap: 8px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.mine {
+        justify-content: flex-end;
+    }
+
+    .message-bubble {
+        max-width: 65%;
+        padding: 12px 16px;
+        border-radius: 16px;
+        word-wrap: break-word;
+    }
+
+    .message.mine .message-bubble {
+        background: linear-gradient(135deg, #ffcc00, #ffd633);
+        color: #222;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message:not(.mine) .message-bubble {
+        background: #fff;
+        color: #222;
+        border: 1px solid #e0e0e0;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .message-sender {
+        font-size: 11px;
+        font-weight: 600;
+        color: #999;
+        margin-bottom: 4px;
+    }
+
+    .message-content {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .message-image {
+        max-width: 100%;
+        max-height: 220px;
+        border-radius: 8px;
+        margin-top: 8px;
+        cursor: pointer;
+    }
+
+    .message-time {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 4px;
+    }
+
+    .message:not(.mine) .message-time {
+        text-align: left;
+    }
+
+    .message.mine .message-time {
+        text-align: right;
+    }
+
+    .no-messages {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .no-messages i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .chat-input-area {
+        background: #fff;
+        padding: 16px 24px;
+        border-top: 1px solid #e0e0e0;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-group-custom {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .input-message {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .input-message:focus {
+        outline: none;
+        border-color: #ffcc00;
+        box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+    }
+
+    .input-file {
+        display: none;
+    }
+
+    .btn-upload {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        color: #666;
+    }
+
+    .btn-upload:hover {
+        background: #fef5e7;
+        border-color: #ffcc00;
+        color: #ffcc00;
+    }
+
+    .btn-send {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(90deg, #ffcc00, #ffd633);
+        color: #222;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+    .btn-send:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+    }
+
+    .btn-send:active {
+        transform: scale(0.95);
+    }
+
+    @@media (max-width: 768px) {
+        .chat-container {
+            height: auto;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+        }
+
+        .chat-messages {
+            padding: 16px 12px;
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+        }
+    }
+</style>
+
+<div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+        <h3>
+            <div class="partner-avatar">
+                @(partner?.FullName?.FirstOrDefault() ?? '?')
+            </div>
+            <span>@partner?.FullName</span>
+        </h3>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages">
+        @if (!Model.Messages.Any())
+        {
+            <div class="no-messages">
+                <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">
+                    <i class="bi bi-chat-left-dots"></i>
+                </div>
+                <p>Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var m in Model.Messages.OrderBy(m => m.SentAt))
+            {
+                bool isMine = m.SenderId == currentUserId;
+
+                <div class="message @(isMine ? "mine" : "")">
+                    <div class="message-bubble">
+                        @if (isMine == false)
+                        {
+                            <div class="message-sender">@m.Sender?.FullName</div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(m.Content))
+                        {
+                            <div class="message-content">
+                                @Html.Raw(m.Content.Replace("\n", "<br />"))
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(m.ImagePath))
+                        {
+                            <img src="@m.ImagePath" class="message-image" alt="Hình ảnh" />
+                        }
+
+                        <div class="message-time">
+                            @m.SentAt.ToString("HH:mm")
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Chat Input Area -->
+    <div class="chat-input-area">
+        <form asp-action="SendMessage" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="conversationId" value="@Model.ConversationId" />
+
+            <div class="input-group-custom">
+                <input type="text" 
+                       name="content" 
+                       class="input-message" 
+                       placeholder="Nhập tin nhắn..." 
+                       autocomplete="off" />
+
+                <label class="btn-upload" title="Gửi ảnh">
+                    <i class="bi bi-image" style="font-size: 18px;"></i>
+                    <input type="file" name="imageFile" class="input-file" accept="image/*" />
+                </label>
+
+                <button type="submit" class="btn-send" title="Gửi">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto scroll to bottom
+    document.querySelector('.chat-messages').scrollTop = document.querySelector('.chat-messages').scrollHeight;
+</script>

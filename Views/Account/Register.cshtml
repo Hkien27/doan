@@ -1,0 +1,123 @@
+@model SecondHandSharing.Models.User
+@{
+    ViewData["Title"] = "Tạo tài khoản";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/register.css">
+</head>
+<body>
+    <!-- Header -->
+    @* <header class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="menu-btn">☰</button>
+                <div class="logo">Sắc</div>
+            </div>
+            <div class="header-center">
+                <div class="location-select">
+                    <span>📍 Vị trí</span>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm..." class="search-input">
+                    <button class="search-btn">🔍</button>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="post-btn">Post Free Ad</button>
+                <div class="header-icons">
+                    <span class="icon">❤️</span>
+                    <span class="icon">🛒</span>
+                    <span class="icon">💬</span>
+                    <span class="icon">👤</span>
+                </div>
+            </div>
+        </div>
+    </header> *@
+
+    <!-- Main Content -->
+    <main class="register-container">
+        <div class="register-wrapper">
+            <!-- Left Side - Image -->
+            <div class="register-image">
+                <img src="~/images/green-forest.jpg" alt="Forest landscape">
+            </div>
+
+            <!-- Right Side - Form -->
+            <div class="register-form-wrapper">
+                <div class="register-form">
+                    <h1 class="form-title">Tạo tài khoản</h1>
+                    <p class="form-subtitle">Nhập thông tin chi tiết của bạn bên dưới</p>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    <form asp-action="Register" method="post" class="form-content">
+                        <!-- Full Name Input -->
+                        <div class="form-group">
+                            <input asp-for="FullName" 
+                                   type="text" 
+                                   class="form-input" 
+                                   placeholder="Tên"
+                                   required>
+                        </div>
+
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <input asp-for="Email" 
+                                   type="email" 
+                                   class="form-input" 
+                                   placeholder="Email hoặc số điện thoại"
+                                   required>
+                        </div>
+                        <div class="mb-3">
+    <label class="form-label">Số điện thoại</label>
+    <input name="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+</div>
+
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <input asp-for="PasswordHash" 
+                                   type="password" 
+                                   class="form-input" 
+                                   placeholder="Mật khẩu"
+                                   required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-register">Tạo Tài Khoản</button>
+                    </form>
+
+                    <!-- Google Sign In -->
+                    <button class="btn-google">
+                        <span class="google-icon">G</span>
+                        Đăng nhập bằng Google
+                    </button>
+
+                    <!-- Sign In Link -->
+                    <div class="signin-link">
+                        <span>Bạn có tài khoản?</span>
+                        <a asp-action="Login">Đăng nhập</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

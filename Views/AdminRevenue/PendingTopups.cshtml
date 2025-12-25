@@ -1,0 +1,73 @@
+@model IEnumerable<SecondHandSharing.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Giao dịch nạp đang chờ duyệt";
+}
+
+<div class="container my-4">
+    <h2>⏳ Giao dịch nạp tiền đang chờ duyệt</h2>
+    <p class="text-muted">Admin kiểm tra và xác nhận nạp tiền vào ví người dùng</p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-secondary text-center py-4">
+            <h5>Không có giao dịch nào đang chờ xử lý</h5>
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-warning">
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Số tiền</th>
+                    <th>Nội dung CK</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td>#@t.TransactionId</td>
+                        <td>@t.User?.Email</td>
+                        <td>@t.Amount.ToString("N0") đ</td>
+                        <td>
+                            <span class="text-primary fw-bold">
+                                @@t.ReferenceCode
+                            </span>
+                            @if (!string.IsNullOrWhiteSpace(t.Note))
+                            {
+                                <div class="small text-muted">@t.Note</div>
+                            }
+                        </td>
+                        <td>@t.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="d-flex gap-2">
+                            <form asp-controller="AdminRevenue"
+                                  asp-action="ApproveTopup"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.TransactionId" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    ✓ Xác nhận
+                                </button>
+                            </form>
+
+                            <form asp-controller="AdminRevenue"
+                                  asp-action="RejectTopup"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@t.TransactionId" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    ✗ Từ chối
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

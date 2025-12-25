@@ -1,0 +1,57 @@
+@model SecondHandSharing.Models.ViewModels.BuyBoostViewModel
+@{
+    ViewData["Title"] = "Mua gói đẩy tin";
+}
+
+<div class="container my-4">
+    <h2>🚀 Mua gói đẩy tin</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Chọn tin cần đẩy</h4>
+            <ul class="list-group">
+                @foreach (var item in Model.MyItems)
+                {
+                    <li class="list-group-item">
+                        <strong>@item.Title</strong><br />
+                        <small>@item.CreatedAt.ToString("dd/MM/yyyy")</small>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h4>Chọn gói BOOST</h4>
+            @foreach (var p in Model.BoostPackages)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <div class="fw-bold">@p.Name</div>
+                        <div>Giá: @p.Price.ToString("N0") đ / @p.DurationDays ngày</div>
+                        <form asp-action="BuyBoost" method="post" class="mt-2">
+                            <input type="hidden" name="packageId" value="@p.PackageId" />
+                            <div class="mb-2">
+                                <select name="itemId" class="form-select" required>
+                                    <option value="">-- Chọn tin --</option>
+                                    @foreach (var item in Model.MyItems)
+                                    {
+                                        <option value="@item.ItemId">@item.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <button class="btn btn-danger w-100">Đẩy tin</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,289 @@
+@model SecondHandSharing.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        padding: 30px 0;
+        margin-bottom: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-header h1 {
+        color: #222;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: none;
+        border-top: 4px solid #ffc107;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .stat-card.primary { border-top-color: #007bff; }
+    .stat-card.success { border-top-color: #28a745; }
+    .stat-card.warning { border-top-color: #ffc107; }
+    .stat-card.info { border-top-color: #17a2b8; }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        color: #222;
+        margin: 10px 0;
+    }
+
+    .stat-title {
+        font-size: 14px;
+        color: #666;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .stat-subtitle {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(90deg, #ffc107, #ff9800);
+        color: #222;
+        font-weight: 600;
+        padding: 15px 20px;
+        border-radius: 12px 12px 0 0;
+        border: none;
+        font-size: 16px;
+    }
+
+    .table-custom {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table-custom thead {
+        background-color: #f8f9fa;
+    }
+
+    .table-custom thead th {
+        font-weight: 600;
+        color: #222;
+        border: none;
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .table-custom tbody td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        color: #555;
+    }
+
+    .table-custom tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .table-custom tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .btn-pending {
+        background: linear-gradient(90deg, #ffc107, #ff9800);
+        color: #222 !important;
+        border: none;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .btn-pending:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    }
+
+    .empty-state {
+        padding: 30px;
+        text-align: center;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+        opacity: 0.5;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .price-highlight {
+        color: #ff9800;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>📊 Admin Dashboard</h1>
+                <p class="mb-0 mt-2" style="color: #555; font-size: 14px;">Quản lý toàn bộ hoạt động của nền tảng</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card primary">
+                <div class="stat-title">👥 Tổng người dùng</div>
+                <div class="stat-number">@Model.TotalUsers</div>
+                <div class="stat-subtitle">@Model.TotalAdmins admin</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card success">
+                <div class="stat-title">🛒 Tổng sản phẩm</div>
+                <div class="stat-number">@Model.TotalItems</div>
+                <div class="stat-subtitle">@Model.TotalActiveItems đang bán</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card warning">
+                <div class="stat-title">❤️ Lượt yêu thích</div>
+                <div class="stat-number">@Model.TotalFavorites</div>
+                <div class="stat-subtitle">&nbsp;</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card info">
+                <div class="stat-title">👁️ Lịch sử xem</div>
+                <div class="stat-number">@Model.TotalViewHistories</div>
+                <div class="stat-subtitle">&nbsp;</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="row">
+        <!-- Người dùng mới -->
+        <div class="col-md-6 mb-4">
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <i class="bi bi-people me-2"></i>Người dùng mới
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.LatestUsers.Any())
+                    {
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>Chưa có người dùng nào</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Ngày tạo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var u in Model.LatestUsers)
+                            {
+                                <tr>
+                                    <td>@u.FullName</td>
+                                    <td>@u.Email</td>
+                                    <td><span style="background: #e7f3ff; color: #0066cc; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">@u.Role</span></td>
+                                    <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sản phẩm mới -->
+        <div class="col-md-6 mb-4">
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <i class="bi bi-bag me-2"></i>Sản phẩm mới đăng
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.LatestItems.Any())
+                    {
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📦</div>
+                            <p>Chưa có sản phẩm nào</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Tiêu đề</th>
+                                    <th>Giá</th>
+                                    <th>Người đăng</th>
+                                    <th>Ngày đăng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var i in Model.LatestItems)
+                            {
+                                <tr>
+                                    <td>@i.Title</td>
+                                    <td><span class="price-highlight">@i.Price.ToString("N0") ₫</span></td>
+                                    <td>@i.User?.FullName</td>
+                                    <td>@i.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+                <div class="p-3" style="border-top: 1px solid #e9ecef;">
+                    <a class="btn btn-pending" asp-controller="Admin" asp-action="PendingItems">
+                        <i class="bi bi-hourglass-split me-2"></i>Tin chờ duyệt
+                    </a>
+                </div>
+            </div>
+            <li class="nav-item">
+    <a class="nav-link" asp-controller="AdminRevenue" asp-action="Index">
+        📊 Quản lý doanh thu
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" asp-controller="AdminRevenue" asp-action="PendingTopups">
+        ⏳ Giao dịch nạp chờ duyệt
+    </a>
+</li>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,69 @@
+@model SecondHandSharing.Models.Item
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+}
+
+<h2 class="mb-4">✏️ Chỉnh sửa sản phẩm</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ItemId" />
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Category" class="form-label"></label>
+            <input asp-for="Category" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Condition" class="form-label"></label>
+            <input asp-for="Condition" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" class="form-select">
+                <option>Đang bán</option>
+                <option>Đã bán</option>
+                <option>Ẩn</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ProductDetail" class="form-label"></label>
+        <textarea asp-for="ProductDetail" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh hiện tại:</label><br />
+        <img src="@Model.Image" alt="Ảnh sản phẩm" width="180" class="border rounded mb-2" />
+        <input type="file" name="ImageFile" class="form-control mt-2" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
+    <a asp-action="MyItems" class="btn btn-secondary">⬅ Quay lại</a>
+</form>
